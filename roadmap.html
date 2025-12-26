@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LingoFlow v2 - Roadmap</title>
+    <style>
+      /* --- 1. GLOBAL RESET --- */
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg-deep: #020617;
+        --text-main: #e2e8f0;
+        --text-muted: #94a3b8;
+        --violet: #8b5cf6;
+        --violet-glow: rgba(139, 92, 246, 0.5);
+        --cyan: #06b6d4;
+        --glass: rgba(255, 255, 255, 0.03);
+        --border: rgba(255, 255, 255, 0.08);
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", sans-serif;
+        background-color: var(--bg-deep);
+        color: var(--text-main);
+        background-image: radial-gradient(
+          circle at 50% 0%,
+          rgba(139, 92, 246, 0.15) 0%,
+          transparent 50%
+        );
+        height: 100vh;
+        overflow: hidden;
+        /* LAYOUT FIX: Grid System */
+        display: grid;
+        grid-template-columns: 80px 1fr;
+      }
+
+      /* --- 2. SIDEBAR --- */
+      .sidebar {
+        background: rgba(255, 255, 255, 0.02);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 20px;
+        gap: 20px;
+        backdrop-filter: blur(10px);
+        z-index: 100;
+      }
+
+      .icon-btn {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        border: none;
+        background: transparent;
+        color: #64748b;
+        cursor: pointer;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .icon-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        transform: scale(1.05);
+      }
+      .icon-btn.active {
+        background: var(--violet);
+        color: white;
+        box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+      }
+
+      /* --- 3. MAIN CONTENT --- */
+      .main-content {
+        height: 100vh;
+        padding: 40px;
+        overflow-y: auto;
+      }
+
+      /* --- 4. ROADMAP SPECIFIC STYLES --- */
+      .page-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 50px;
+      }
+
+      .header-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(139, 92, 246, 0.2);
+        color: var(--violet);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Timeline Logic */
+      .timeline-container {
+        max-width: 600px;
+        margin: 0 auto;
+        position: relative;
+        padding-bottom: 50px;
+      }
+
+      /* The Vertical Line */
+      .timeline-line {
+        position: absolute;
+        left: 20px;
+        top: 10px;
+        bottom: 0;
+        width: 2px;
+        background: linear-gradient(to bottom, var(--violet), #1e293b);
+        z-index: 0;
+      }
+
+      .timeline-item {
+        position: relative;
+        padding-left: 60px; /* Space for the line */
+        margin-bottom: 30px;
+      }
+
+      /* The Circle Node */
+      .node-circle {
+        position: absolute;
+        left: 4px; /* Centered on the 2px line (20px left - 16px half width) */
+        top: 0;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 14px;
+        z-index: 1;
+        border: 4px solid var(--bg-deep); /* Creates a 'gap' around the circle */
+      }
+
+      .node-completed {
+        background: var(--cyan);
+        color: white;
+      }
+      .node-active {
+        background: var(--violet);
+        color: white;
+        box-shadow: 0 0 20px var(--violet-glow);
+      }
+      .node-locked {
+        background: #1e293b;
+        color: #64748b;
+        border-color: var(--bg-deep);
+      }
+
+      /* The Card */
+      .roadmap-card {
+        background: var(--glass);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: 0.2s;
+      }
+
+      .roadmap-card:hover {
+        transform: translateX(5px);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+      .roadmap-card.active {
+        border-color: var(--violet);
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.1);
+      }
+      .roadmap-card.locked {
+        opacity: 0.5;
+        filter: grayscale(1);
+        cursor: not-allowed;
+      }
+
+      .btn-continue {
+        padding: 10px 20px;
+        background: var(--violet);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.2s;
+      }
+      .btn-continue:hover {
+        background: #7c3aed;
+        box-shadow: 0 0 15px var(--violet-glow);
+      }
+
+      h3 {
+        margin: 0 0 5px 0;
+        font-size: 18px;
+      }
+      p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 14px;
+      }
+      .status-done {
+        color: var(--cyan);
+        font-weight: bold;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div
+        style="
+          padding: 10px;
+          background: rgba(139, 92, 246, 0.2);
+          border-radius: 10px;
+          color: var(--violet);
+          font-weight: bold;
+          font-size: 20px;
+        "
+      >
+        L
+      </div>
+
+      <button class="icon-btn" onclick="window.location.href='index.html'">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        </svg>
+      </button>
+      <!-- Active Roadmap Button -->
+      <button class="icon-btn active">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
+          <line x1="8" y1="2" x2="8" y2="18" />
+          <line x1="16" y1="6" x2="16" y2="22" />
+        </svg>
+      </button>
+      <button class="icon-btn" onclick="window.location.href='stats.html'">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M18 20V10" />
+          <path d="M12 20V4" />
+          <path d="M6 20v-6" />
+        </svg>
+      </button>
+      <button class="icon-btn" onclick="window.location.href='profile.html'">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      </button>
+      <button class="icon-btn" onclick="window.location.href='settings.html'">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <circle cx="12" cy="12" r="3" />
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <div class="page-header">
+        <div class="header-icon">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
+            <line x1="8" y1="2" x2="8" y2="18" />
+            <line x1="16" y1="6" x2="16" y2="22" />
+          </svg>
+        </div>
+        <div>
+          <h1 style="margin: 0; font-size: 28px">Learning Roadmap</h1>
+          <p style="color: var(--text-muted); margin-top: 5px">
+            Your journey to fluency
+          </p>
+        </div>
+      </div>
+
+      <div class="timeline-container">
+        <!-- The Vertical Line -->
+        <div class="timeline-line"></div>
+
+        <!-- Level 1 (Done) -->
+        <div class="timeline-item">
+          <div class="node-circle node-completed">✓</div>
+          <div class="roadmap-card">
+            <div>
+              <h3>Basics</h3>
+              <p>Letters & Sounds</p>
+            </div>
+            <div class="status-done">✓ Done</div>
+          </div>
+        </div>
+
+        <!-- Level 2 (Done) -->
+        <div class="timeline-item">
+          <div class="node-circle node-completed">✓</div>
+          <div class="roadmap-card">
+            <div>
+              <h3>Greetings</h3>
+              <p>Hello & Goodbye</p>
+            </div>
+            <div class="status-done">✓ Done</div>
+          </div>
+        </div>
+
+        <!-- Level 3 (Active - Respectful Phrases) -->
+            <div class="timeline-item">
+                <div class="node-circle node-active">3</div>
+                <div class="roadmap-card active">
+                    <div>
+                        <h3>Common Phrases</h3>
+                        <p style="margin: 5px 0 0; font-size: 14px; color: var(--text-muted);">Everyday expressions</p>
+                    </div>
+                    
+                    <!-- LINK TO RESPECT LESSON -->
+                    <button class="btn-continue" onclick="window.location.href='lesson.html?type=respect'">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        CONTINUE
+                    </button>
+                </div>
+            </div>
+
+       <!-- Level 4 (Active - Numbers 20-30) -->
+            <div class="timeline-item">
+                <div class="node-circle node-active">4</div>
+                <div class="roadmap-card active">
+                    <div>
+                        <h3>Numbers</h3>
+                        <p style="margin: 5px 0 0; font-size: 14px; color: var(--text-muted);">Counting 20-30</p>
+                    </div>
+                    
+                    <!-- LINK TO HARD NUMBERS LESSON -->
+                    <button class="btn-continue" onclick="window.location.href='lesson.html?type=numbers2'">
+                        START LEVEL
+                    </button>
+                </div>
+            </div>
+
+        <!-- Level 5 (Locked) -->
+        <div class="timeline-item">
+          <div class="node-circle node-locked">🔒</div>
+          <div class="roadmap-card locked">
+            <div>
+              <h3 style="color: #64748b">Food</h3>
+              <p>Ordering & Dining</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Level 6 (Locked) -->
+        <div class="timeline-item">
+          <div class="node-circle node-locked">🔒</div>
+          <div class="roadmap-card locked">
+            <div>
+              <h3 style="color: #64748b">Travel</h3>
+              <p>Getting Around</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LingoFlow v2 - Settings</title>
+    <style>
+      /* --- 1. GLOBAL RESET --- */
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg-deep: #020617;
+        --text-main: #e2e8f0;
+        --text-muted: #94a3b8;
+        --violet: #8b5cf6;
+        --violet-glow: rgba(139, 92, 246, 0.5);
+        --cyan: #06b6d4;
+        --glass: rgba(255, 255, 255, 0.05);
+        --border: rgba(255, 255, 255, 0.1);
+        --red: #ef4444;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", sans-serif;
+        background-color: var(--bg-deep);
+        color: var(--text-main);
+        background-image: radial-gradient(
+          circle at 50% 0%,
+          rgba(139, 92, 246, 0.15) 0%,
+          transparent 50%
+        );
+        height: 100vh;
+        overflow: hidden;
+
+        /* --- THE LAYOUT FIX (Grid) --- */
+        display: grid;
+        grid-template-columns: 80px 1fr;
+      }
+
+      /* --- 2. SIDEBAR --- */
+      .sidebar {
+        background: rgba(255, 255, 255, 0.02);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 20px;
+        gap: 20px;
+        backdrop-filter: blur(10px);
+      }
+
+      /* --- 3. MAIN CONTENT --- */
+      .main-content {
+        height: 100vh;
+        padding: 40px;
+        overflow-y: auto;
+        max-width: 800px; /* Keep settings readable */
+      }
+
+      /* --- 4. COMPONENT STYLES --- */
+      .icon-btn {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        border: none;
+        background: transparent;
+        color: #64748b;
+        cursor: pointer;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .icon-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        transform: scale(1.05);
+      }
+      .icon-btn.active {
+        background: var(--violet);
+        color: white;
+        box-shadow: 0 0 15px var(--violet-glow);
+      }
+
+      h1 {
+        margin: 0 0 10px 0;
+        font-size: 28px;
+      }
+      p.subtitle {
+        color: var(--text-muted);
+        margin: 0 0 40px 0;
+      }
+
+      /* Settings Sections */
+      .section {
+        background: var(--glass);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        margin-bottom: 24px;
+        overflow: hidden;
+      }
+
+      .section-header {
+        padding: 15px 24px;
+        background: rgba(255, 255, 255, 0.02);
+        border-bottom: 1px solid var(--border);
+        font-weight: bold;
+        font-size: 14px;
+        color: var(--text-main);
+      }
+
+      .setting-row {
+        padding: 20px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border);
+        transition: 0.2s;
+      }
+
+      .setting-row:last-child {
+        border-bottom: none;
+      }
+      .setting-row:hover {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .setting-info h3 {
+        margin: 0 0 5px 0;
+        font-size: 16px;
+      }
+      .setting-info p {
+        margin: 0;
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+
+      /* Toggle Switch */
+      .toggle {
+        width: 50px;
+        height: 26px;
+        background: #334155;
+        border-radius: 13px;
+        position: relative;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      .toggle::after {
+        content: "";
+        position: absolute;
+        left: 4px;
+        top: 4px;
+        width: 18px;
+        height: 18px;
+        background: white;
+        border-radius: 50%;
+        transition: 0.3s;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      .toggle.on {
+        background: var(--violet);
+      }
+      .toggle.on::after {
+        left: 28px;
+      }
+
+      /* Disabled Toggle */
+      .toggle.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* Logout Button */
+      .logout-btn {
+        padding: 10px 20px;
+        background: transparent;
+        border: 1px solid var(--red);
+        color: var(--red);
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .logout-btn:hover {
+        background: rgba(239, 68, 68, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div
+        style="
+          padding: 10px;
+          background: rgba(139, 92, 246, 0.2);
+          border-radius: 10px;
+          color: var(--violet);
+        "
+      >
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+        </svg>
+      </div>
+
+      <button class="icon-btn" onclick="window.location.href='index.html'">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+      </button>
+      <button class="icon-btn" onclick="window.location.href='roadmap.html'">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
+          <line x1="8" y1="2" x2="8" y2="18" />
+          <line x1="16" y1="6" x2="16" y2="22" />
+        </svg>
+      </button>
+      <button class="icon-btn" onclick="window.location.href='stats.html'">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M18 20V10" />
+          <path d="M12 20V4" />
+          <path d="M6 20v-6" />
+        </svg>
+      </button>
+      <button class="icon-btn" onclick="window.location.href='profile.html'">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      </button>
+
+      <!-- Active Settings Button -->
+      <button class="icon-btn active">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <circle cx="12" cy="12" r="3" />
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <h1>Settings</h1>
+      <p class="subtitle">Configure your experience</p>
+
+      <!-- General Section -->
+      <div class="section">
+        <div class="section-header">General</div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <h3>Dark Mode</h3>
+            <p>Always on for the Gaming Rig aesthetic</p>
+          </div>
+          <!-- Locked Toggle -->
+          <div class="toggle on disabled" title="Always On"></div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <h3>Sound Effects</h3>
+            <p>Mechanical clicks and success sounds</p>
+          </div>
+          <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+        </div>
+      </div>
+
+      <!-- Account Section -->
+      <div class="section">
+        <div class="section-header">Account</div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <h3>Public Profile</h3>
+            <p>Visible to others on leaderboards</p>
+          </div>
+          <div class="toggle" onclick="this.classList.toggle('on')"></div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <h3>Sign Out</h3>
+            <p>Log out of your account</p>
+          </div>
+          <button class="logout-btn" onclick="alert('Logged out!')">
+            Log Out
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

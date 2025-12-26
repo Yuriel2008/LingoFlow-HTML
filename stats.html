@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LingoFlow v2 - Stats</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg-deep: #020617;
+        --text-main: #e2e8f0;
+        --violet: #8b5cf6;
+        --cyan: #06b6d4;
+        --glass: rgba(255, 255, 255, 0.05);
+        --border: rgba(255, 255, 255, 0.1);
+      }
+      body {
+        margin: 0;
+        font-family: "Segoe UI", sans-serif;
+        background-color: var(--bg-deep);
+        color: var(--text-main);
+        background-image: radial-gradient(
+          circle at 50% 0%,
+          rgba(139, 92, 246, 0.15) 0%,
+          transparent 50%
+        );
+        height: 100vh;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 80px 1fr;
+      }
+      .sidebar {
+        background: rgba(255, 255, 255, 0.02);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 20px;
+        gap: 20px;
+        backdrop-filter: blur(10px);
+        z-index: 100;
+      }
+      .main-content {
+        height: 100vh;
+        padding: 40px;
+        overflow-y: auto;
+      }
+      .icon-btn {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        border: none;
+        background: transparent;
+        color: #64748b;
+        cursor: pointer;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .icon-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        transform: scale(1.05);
+      }
+      .icon-btn.active {
+        background: var(--violet);
+        color: white;
+        box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+      }
+      .glass-panel {
+        background: var(--glass);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+        backdrop-filter: blur(12px);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 40px;
+      }
+      .chart-container {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        height: 150px;
+        margin-top: 20px;
+      }
+      .bar-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        height: 100%;
+        justify-content: flex-end;
+        width: 100%;
+      }
+      .bar {
+        width: 30px;
+        background: rgba(139, 92, 246, 0.3);
+        border-radius: 4px 4px 0 0;
+        transition: height 0.5s;
+      }
+      .bar.high {
+        background: var(--violet);
+        box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+      }
+
+      .stat-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 15px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .stat-row:last-child {
+        border-bottom: none;
+      }
+      .stat-label {
+        color: #94a3b8;
+      }
+      .stat-value {
+        font-weight: bold;
+        font-size: 18px;
+      }
+
+      .achievements-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 16px;
+      }
+      .achievement-card {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+      }
+      .achievement-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+      }
+      .locked {
+        opacity: 0.5;
+        filter: grayscale(1);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar">
+      <div
+        style="
+          padding: 10px;
+          background: rgba(139, 92, 246, 0.2);
+          border-radius: 10px;
+          color: var(--violet);
+          font-weight: bold;
+          font-size: 20px;
+        "
+      >
+        L
+      </div>
+      <button class="icon-btn" onclick="window.location.href='index.html'">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        </svg>
+      </button>
+      <button class="icon-btn" onclick="window.location.href='roadmap.html'">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
+        </svg>
+      </button>
+      <button class="icon-btn active">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M18 20V10" />
+          <path d="M12 20V4" />
+          <path d="M6 20v-6" />
+        </svg>
+      </button>
+      <button class="icon-btn" onclick="window.location.href='profile.html'">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      </button>
+      <button class="icon-btn" onclick="window.location.href='settings.html'">
+         <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <circle cx="12" cy="12" r="3" />
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <div class="main-content">
+      <h1>Statistics</h1>
+      <p style="color: #94a3b8; margin-bottom: 30px">
+        Track your learning progress
+      </p>
+
+      <div class="stats-grid">
+        <!-- Weekly Chart -->
+        <div class="glass-panel">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 20px;
+            "
+          >
+            <h3 style="margin: 0">Weekly Activity</h3>
+            <div style="color: var(--cyan); font-size: 14px">
+              +15% vs last week
+            </div>
+          </div>
+          <div class="chart-container">
+            <div class="bar-group">
+              <div class="bar" style="height: 40%"></div>
+              <span style="font-size: 12px; color: #94a3b8">M</span>
+            </div>
+            <div class="bar-group">
+              <div class="bar" style="height: 60%"></div>
+              <span style="font-size: 12px; color: #94a3b8">T</span>
+            </div>
+            <div class="bar-group">
+              <div class="bar" style="height: 30%"></div>
+              <span style="font-size: 12px; color: #94a3b8">W</span>
+            </div>
+            <div class="bar-group">
+              <div class="bar" style="height: 80%"></div>
+              <span style="font-size: 12px; color: #94a3b8">T</span>
+            </div>
+            <div class="bar-group">
+              <div class="bar" style="height: 50%"></div>
+              <span style="font-size: 12px; color: #94a3b8">F</span>
+            </div>
+            <div class="bar-group">
+              <div class="bar high" style="height: 90%"></div>
+              <span style="font-size: 12px; color: #94a3b8">S</span>
+            </div>
+            <div class="bar-group">
+              <div class="bar" style="height: 20%"></div>
+              <span style="font-size: 12px; color: #94a3b8">S</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Overview -->
+        <div class="glass-panel">
+          <h3 style="margin-top: 0">Overview</h3>
+          <div class="stat-row">
+            <span class="stat-label">Total XP Earned</span
+            ><span class="stat-value" style="color: var(--violet)">2,450</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Lessons Completed</span
+            ><span class="stat-value" style="color: var(--cyan)">28</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Average Accuracy</span
+            ><span class="stat-value" style="color: #22c55e">87%</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Time Spent</span
+            ><span class="stat-value" style="color: white">12h 34m</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Current Streak</span
+            ><span class="stat-value" style="color: #fb923c">7 days</span>
+          </div>
+        </div>
+      </div>
+
+      <h3>Achievements</h3>
+      <div class="achievements-grid">
+        <div class="achievement-card">
+          <div
+            class="achievement-icon"
+            style="color: var(--violet); background: rgba(139, 92, 246, 0.2)"
+          >
+            ⚡
+          </div>
+          <div>
+            <strong>First Steps</strong><br /><span
+              style="font-size: 12px; color: #94a3b8"
+              >Complete 1 lesson</span
+            >
+          </div>
+        </div>
+        <div class="achievement-card">
+          <div
+            class="achievement-icon"
+            style="color: var(--cyan); background: rgba(6, 182, 212, 0.2)"
+          >
+            🎯
+          </div>
+          <div>
+            <strong>Sharpshooter</strong><br /><span
+              style="font-size: 12px; color: #94a3b8"
+              >100% Accuracy</span
+            >
+          </div>
+        </div>
+        <div class="achievement-card">
+          <div
+            class="achievement-icon"
+            style="color: var(--violet); background: rgba(139, 92, 246, 0.2)"
+          >
+            ⏰
+          </div>
+          <div>
+            <strong>Dedicated</strong><br /><span
+              style="font-size: 12px; color: #94a3b8"
+              >7 day streak</span
+            >
+          </div>
+        </div>
+        <div class="achievement-card locked">
+          <div
+            class="achievement-icon"
+            style="background: #1e293b; color: #64748b"
+          >
+            🏆
+          </div>
+          <div>
+            <strong>Champion</strong><br /><span
+              style="font-size: 12px; color: #94a3b8"
+              >Reach Gold Rank</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LingoFlow v2 - Lesson</title>
+    <style>
+        /* --- STYLES --- */
+        * { box-sizing: border-box; }
+        :root {
+            --bg-deep: #020617;
+            --text-main: #e2e8f0;
+            --violet: #8b5cf6;
+            --green: #22c55e;
+            --red: #ef4444;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            background-image: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 28px;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .close-btn:hover { color: white; }
+
+        .progress-track {
+            flex: 1;
+            height: 10px;
+            background: #1e293b;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--violet);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 5px;
+        }
+
+        /* Quiz Area */
+        .quiz-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin-bottom: 40px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .option-btn {
+            padding: 20px;
+            background: rgba(255,255,255,0.03);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .option-btn:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+        .option-btn:active { transform: scale(0.98); }
+
+        /* Button States */
+        .option-btn.selected { border-color: var(--violet); background: rgba(139, 92, 246, 0.2); box-shadow: 0 0 15px rgba(139, 92, 246, 0.3); }
+        .option-btn.correct { border-color: var(--green); background: rgba(34, 197, 94, 0.2); color: var(--green); }
+        .option-btn.wrong { border-color: var(--red); background: rgba(239, 68, 68, 0.2); color: var(--red); }
+
+        /* Footer */
+        .footer {
+            padding: 20px;
+            border-top: 1px solid var(--border);
+            background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        .check-btn {
+            padding: 14px 40px;
+            background: var(--violet);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: auto;
+            transition: 0.2s;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+        }
+        .check-btn:active { transform: translateY(2px); box-shadow: none; }
+        .check-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .feedback-msg {
+            font-weight: bold;
+            font-size: 22px;
+            display: none;
+        }
+        .feedback-msg.correct { color: var(--green); display: flex; align-items: center; gap: 10px; }
+        .feedback-msg.wrong { color: var(--red); display: flex; align-items: center; gap: 10px; }
+
+    </style>
+</head>
+<body>
+
+    <!-- 1. Header -->
+    <div class="top-bar">
+        <!-- Close Button (Goes back to previous page) -->
+        <button class="close-btn" onclick="window.history.back()">×</button>
+        <div class="progress-track">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+    </div>
+
+    <!-- 2. The Question (THIS WAS MISSING!) -->
+    <div class="quiz-container">
+        <!-- The ID "question-text" MUST be here for JS to work -->
+        <h2 id="question-text">Loading...</h2>
+        
+        <!-- The ID "options-area" MUST be here -->
+        <div class="options-grid" id="options-area">
+            <!-- JavaScript will put buttons here -->
+        </div>
+    </div>
+
+    <!-- 3. Footer -->
+    <div class="footer">
+        <div class="footer-content">
+            <div id="feedback" class="feedback-msg"></div>
+            <button class="check-btn" id="action-btn" onclick="handleAction()">Check</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 4. THE BRAIN ---
+
+        // The Data
+        const lessonDatabase = {
+            'happy': [
+                { q: "How to say 'Very Happy'?", answers: [ { text: "Rất vui", correct: true }, { text: "Buồn", correct: false }, { text: "Tức giận", correct: false }, { text: "Mệt", correct: false } ]},
+                { q: "Translate 'Awesome!'", answers: [ { text: "Tuyệt vời", correct: true }, { text: "Xấu", correct: false }, { text: "Bình thường", correct: false }, { text: "Không tốt", correct: false } ]},
+                { q: "What is 'Cười'?", answers: [ { text: "Smile", correct: true }, { text: "Cry", correct: false }, { text: "Sleep", correct: false }, { text: "Run", correct: false } ]},
+                { q: "Translate 'I love it'", answers: [ { text: "Tôi thích nó", correct: true }, { text: "Tôi ghét nó", correct: false }, { text: "Tôi sợ", correct: false }, { text: "Tôi đi", correct: false } ]}
+            ],
+            'respect': [
+                { q: "Hello (to older person)?", answers: [ { text: "Cháu chào bác", correct: true }, { text: "Ê", correct: false }, { text: "Chào nhé", correct: false }, { text: "Hi", correct: false } ]},
+                { q: "Thank you (Polite)?", answers: [ { text: "Cảm ơn ạ", correct: true }, { text: "Cảm ơn", correct: false }, { text: "Không có chi", correct: false }, { text: "Được rồi", correct: false } ]},
+                { q: "Excuse me (Polite)?", answers: [ { text: "Xin lỗi ạ", correct: true }, { text: "Sai rồi", correct: false }, { text: "Không sao", correct: false }, { text: "Đi đi", correct: false } ]},
+                { q: "Yes (to teacher)?", answers: [ { text: "Dạ / Vâng", correct: true }, { text: "Ừ", correct: false }, { text: "Đúng", correct: false }, { text: "Ok", correct: false } ]}
+            ],
+            'numbers1': [
+                { q: "Number 1?", answers: [ { text: "Một", correct: true }, { text: "Hai", correct: false }, { text: "Ba", correct: false }, { text: "Bốn", correct: false } ]},
+                { q: "Number 5?", answers: [ { text: "Năm", correct: true }, { text: "Sáu", correct: false }, { text: "Bảy", correct: false }, { text: "Tám", correct: false } ]},
+                { q: "Number 10?", answers: [ { text: "Mười", correct: true }, { text: "Chín", correct: false }, { text: "Một", correct: false }, { text: "Không", correct: false } ]},
+                { q: "Calculate: Một + Hai", answers: [ { text: "Ba", correct: true }, { text: "Bốn", correct: false }, { text: "Năm", correct: false }, { text: "Hai", correct: false } ]}
+            ],
+            'numbers2': [
+                { q: "Number 20?", answers: [ { text: "Hai mươi", correct: true }, { text: "Mười hai", correct: false }, { text: "Hai hai", correct: false }, { text: "Ba mươi", correct: false } ]},
+                { q: "Number 25?", answers: [ { text: "Hai lăm", correct: true }, { text: "Hai năm", correct: false }, { text: "Năm hai", correct: false }, { text: "Hai mươi", correct: false } ]},
+                { q: "Number 30?", answers: [ { text: "Ba mươi", correct: true }, { text: "Ba ba", correct: false }, { text: "Mười ba", correct: false }, { text: "Bốn mươi", correct: false } ]},
+                { q: "Number 21?", answers: [ { text: "Hai mốt", correct: true }, { text: "Hai một", correct: false }, { text: "Hai mươi một", correct: false }, { text: "Mười hai", correct: false } ]}
+            ]
+        };
+
+        // Determine which lesson to load
+        const urlParams = new URLSearchParams(window.location.search);
+        const lessonType = urlParams.get('type') || 'happy'; 
+        
+        // Safety Check
+        const questions = lessonDatabase[lessonType] || lessonDatabase['happy'];
+
+        let currentQIndex = 0;
+        let selectedBtn = null;
+        let state = 'idle';
+
+        // Initialize
+        loadQuestion();
+
+        function loadQuestion() {
+            const data = questions[currentQIndex];
+            
+            // Now this will work because the HTML element exists!
+            const titleEl = document.getElementById('question-text');
+            if(titleEl) titleEl.innerText = data.q;
+            
+            // Shuffle
+            let options = [...data.answers];
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+
+            const area = document.getElementById('options-area');
+            if(area) {
+                area.innerHTML = '';
+                
+                options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.innerText = opt.text;
+                    btn.onclick = () => selectOption(btn, opt.correct);
+                    btn.dataset.correct = opt.correct; 
+                    area.appendChild(btn);
+                });
+            }
+
+            // Reset UI
+            state = 'idle';
+            selectedBtn = null;
+            document.getElementById('feedback').className = 'feedback-msg';
+            document.getElementById('feedback').innerText = '';
+            
+            const actionBtn = document.getElementById('action-btn');
+            actionBtn.innerText = 'Check';
+            actionBtn.style.background = '#8b5cf6'; // Violet
+            actionBtn.disabled = true; // Disable until selected
+            actionBtn.style.opacity = '0.5';
+            
+            updateProgress();
+        }
+
+        function selectOption(btn, isCorrect) {
+            if (state === 'checked') return; // Locked
+
+            document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedBtn = btn;
+
+            // Enable Check Button
+            const actionBtn = document.getElementById('action-btn');
+            actionBtn.disabled = false;
+            actionBtn.style.opacity = '1';
+        }
+
+        function handleAction() {
+            const btn = document.getElementById('action-btn');
+
+            if (state === 'idle') {
+                // CHECK ANSWER
+                if (!selectedBtn) return;
+
+                const isCorrect = selectedBtn.dataset.correct === 'true';
+                const feedback = document.getElementById('feedback');
+                
+                if (isCorrect) {
+                    selectedBtn.classList.add('correct');
+                    feedback.innerHTML = '<span>✓</span> Excellent!';
+                    feedback.className = 'feedback-msg correct';
+                    btn.style.background = '#22c55e'; // Green
+                } else {
+                    selectedBtn.classList.add('wrong');
+                    feedback.innerHTML = '<span>×</span> Incorrect.';
+                    feedback.className = 'feedback-msg wrong';
+                    btn.style.background = '#ef4444'; // Red
+                }
+
+                btn.innerText = 'Continue';
+                state = 'checked';
+
+            } else {
+                // NEXT QUESTION
+                if (currentQIndex < questions.length - 1) {
+                    currentQIndex++;
+                    loadQuestion();
+                } else {
+                    // Finish - Go back
+                    window.history.back();
+                }
+            }
+        }
+
+        function updateProgress() {
+            const percent = (currentQIndex / questions.length) * 100;
+            document.getElementById('progress').style.width = percent + '%';
+        }
+    </script>
+</body>
+</html>
