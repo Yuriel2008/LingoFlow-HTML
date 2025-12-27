@@ -1,0 +1,123 @@
+/* style.css - The Master Style Sheet */
+* { box-sizing: border-box; }
+
+:root {
+    --bg-deep: #020617; 
+    --text-main: #e2e8f0;
+    --text-muted: #94a3b8;
+    --violet: #8b5cf6;
+    --violet-glow: rgba(139, 92, 246, 0.5);
+    --cyan: #06b6d4;
+    --green: #22c55e;
+    --orange: #fb923c;
+    --red: #ef4444;
+    --glass: rgba(255, 255, 255, 0.05);
+    --border: rgba(255, 255, 255, 0.1);
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--bg-deep);
+    color: var(--text-main);
+    background-image: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+    height: 100vh;
+    overflow: hidden;
+    /* Grid Layout for Desktop */
+    display: grid;
+    grid-template-columns: 80px 1fr;
+}
+
+/* --- SIDEBAR --- */
+.sidebar {
+    background: rgba(255, 255, 255, 0.02);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    gap: 20px;
+    backdrop-filter: blur(10px);
+    z-index: 100;
+}
+
+/* --- MAIN CONTENT --- */
+.main-content {
+    height: 100vh;
+    padding: 40px;
+    overflow-y: auto;
+}
+
+/* --- COMPONENTS --- */
+.glass-panel {
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+}
+
+.icon-btn {
+    width: 48px; height: 48px; border-radius: 12px; border: none;
+    background: transparent; color: #64748b; cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease;
+    will-change: transform;
+    display: flex; align-items: center; justify-content: center;
+}
+.icon-btn:hover { background: rgba(255,255,255,0.1); color: white; transform: scale(1.05); }
+.icon-btn.active { background: var(--violet); color: white; box-shadow: 0 0 15px var(--violet-glow); }
+.icon-btn:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
+
+/* --- HEADER & STATS --- */
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+.hud-stats { display: flex; gap: 15px; }
+.badge { padding: 8px 16px; border-radius: 8px; font-weight: bold; display: flex; align-items: center; gap: 8px; font-size: 14px; background: var(--glass); border: 1px solid var(--border); }
+.streak { color: #fb923c; border-color: rgba(251, 146, 60, 0.3); }
+.xp { color: var(--cyan); border-color: rgba(6, 182, 212, 0.3); }
+
+/* --- GRIDS & CARDS --- */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+.level-card { position: relative; transition: 0.2s; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; min-height: 180px; }
+.level-card:hover { border-color: var(--violet); transform: translateY(-5px); }
+
+.level-header { display: flex; gap: 15px; align-items: flex-start; margin-bottom: 15px; }
+.level-icon { width: 40px; height: 40px; border-radius: 8px; font-weight: bold; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.level-info h3 { margin: 0; font-size: 18px; color: white; }
+.level-info p { margin: 5px 0 0; font-size: 14px; color: var(--text-muted); }
+.xp-badge { margin-left: auto; padding: 4px 8px; background: rgba(255, 255, 255, 0.05); border-radius: 6px; font-size: 12px; font-weight: 500; color: #cbd5e1; white-space: nowrap; }
+
+/* --- BUTTONS --- */
+.btn-start { width: 100%; padding: 12px; background: var(--violet); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: auto; }
+.btn-start:hover { background: #7c3aed; box-shadow: 0 0 20px var(--violet-glow); }
+.btn-continue { padding: 8px 16px; background: var(--violet); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+
+/* --- PROGRESS BAR --- */
+.progress-container { margin-top: auto; margin-bottom: 15px; }
+.progress-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
+.progress-bar { height: 6px; background: #1e293b; border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--violet); border-radius: 3px; }
+
+/* --- STATES --- */
+.completed .level-icon { background: rgba(6, 182, 212, 0.2); color: var(--cyan); }
+.completed { border-color: rgba(6, 182, 212, 0.3); }
+.status-done { color: var(--cyan); font-size: 14px; display: flex; align-items: center; gap: 5px; margin-top: auto; }
+.active { border-color: var(--violet); box-shadow: 0 0 15px rgba(139, 92, 246, 0.2); }
+.active .level-icon { background: rgba(139, 92, 246, 0.2); color: var(--violet); }
+.locked { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
+.locked .level-icon { background: #1e293b; color: #64748b; }
+
+/* --- ROADMAP TIMELINE --- */
+.timeline-container { max-width: 600px; margin: 0 auto; position: relative; padding-bottom: 50px; }
+.timeline-line { position: absolute; left: 20px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--violet), #1e293b); }
+.timeline-item { position: relative; padding-left: 60px; margin-bottom: 30px; }
+.node-circle { position: absolute; left: 4px; top: 0; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; z-index: 1; border: 2px solid var(--bg-deep); }
+.node-completed { background: var(--cyan); color: white; }
+.node-active { background: var(--violet); color: white; box-shadow: 0 0 15px rgba(139, 92, 246, 0.5); }
+.node-locked { background: #1e293b; color: #64748b; border: 1px solid #334155; }
+
+/* --- MOBILE RESPONSIVE --- */
+@media (max-width: 768px) {
+    body { grid-template-columns: 1fr; }
+    .sidebar { width: 100%; height: 60px; bottom: 0; top: auto; flex-direction: row; justify-content: space-around; border-right: none; border-top: 1px solid var(--border); background: #020617; }
+    .main-content { margin-left: 0; width: 100%; padding: 20px; padding-bottom: 80px; }
+}
