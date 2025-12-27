@@ -1,25 +1,25 @@
-/* script.js - The Brains */
-
 document.addEventListener('DOMContentLoaded', function() {
-    // 1. Handle Navigation Clicks
+    // 1. Navigation Logic (Handles clicks)
     const navButtons = document.querySelectorAll('[data-page]');
-
+    
     navButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             const destination = btn.dataset.page;
-            window.location.href = destination;
+            // Add a subtle loading effect (Optional)
+            document.body.style.opacity = '0.5';
+            setTimeout(() => {
+                window.location.href = destination;
+            }, 100);
         });
     });
 
-    // 2. Auto-Highlight the Active Button (DeepSeek's Suggestion)
-    // Get the current file name (e.g., "index.html")
+    // 2. Auto-Highlight Active Button
+    // Get current filename (e.g., "roadmap.html")
     let currentPath = window.location.pathname.split('/').pop();
-    
-    // If path is empty (root), assume index.html
-    if (currentPath === '') currentPath = 'index.html';
+    if (currentPath === '') currentPath = 'index.html'; // Handle root
 
-    // Find the button that matches this page and make it glow
     document.querySelectorAll('[data-page]').forEach(btn => {
+        // If the button's data-page matches the current URL, make it active
         if (btn.dataset.page === currentPath) {
             btn.classList.add('active');
         } else {
