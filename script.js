@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 2. Auto-Highlight Active Button
     // Get current filename (e.g., "roadmap.html")
     let currentPath = window.location.pathname.split('/').pop();
-    if (currentPath === '') currentPath = 'index.html'; // Handle root
+    if (currentPath === '') currentPath = 'index.php'; // Handle root
 
     document.querySelectorAll('[data-page]').forEach(btn => {
         // If the button's data-page matches the current URL, make it active

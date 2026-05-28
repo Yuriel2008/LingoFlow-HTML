@@ -1,0 +1,260 @@
+<?php
+// --- 1. CONNECT TO THE DATABASE ---
+require 'db_connect.php';
+
+// --- 2. FETCH USER DATA ---
+// We are simulating User ID 1 (The 'Learner' from your SQL dump)
+$user_id = 1;
+
+try {
+  // Prepare the question for the database
+  $stmt = $conn->prepare("SELECT * FROM users WHERE id = ?");
+  $stmt->execute([$user_id]);
+  $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+  // Safety: If no user found, use defaults
+  if (!$user) {
+    $user = ['username' => 'Ghost', 'xp' => 0, 'streak' => 0, 'rank_name' => 'Unranked'];
+  }
+} catch (Exception $e) {
+  die("Error loading profile: " . $e->getMessage());
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LingoFlow v2 - Home</title>
+  <!-- LINK TO SHARED CSS -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="logo">L</div>
+    <!-- Note: We updated this link to index.php -->
+    <button class="icon-btn active" onclick="window.location.href='index.php'" aria-label="Home">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        <polyline points="9 22 9 12 15 12 15 22" />
+      </svg>
+    </button>
+    <button class="icon-btn" onclick="window.location.href='roadmap.html'" aria-label="Roadmap">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
+        <line x1="8" y1="2" x2="8" y2="18" />
+        <line x1="16" y1="6" x2="16" y2="22" />
+      </svg>
+    </button>
+    <button class="icon-btn" onclick="window.location.href='stats.html'" aria-label="Stats">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 20V10" />
+        <path d="M12 20V4" />
+        <path d="M6 20v-6" />
+      </svg>
+    </button>
+    <button class="icon-btn" onclick="window.location.href='profile.html'" aria-label="Profile">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
+    </button>
+    <button class="icon-btn" onclick="window.location.href='settings.html'" aria-label="Settings">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3" />
+        <path
+          d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+      </svg>
+    </button>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <header>
+      <div>
+        <h1 style="
+              margin: 0;
+              font-size: 48px;
+              color: var(--violet);
+              font-weight: 900;
+              letter-spacing: -1px;
+              text-shadow: 0 0 20px var(--violet-glow);
+            ">
+          LingoFlow
+        </h1>
+        <h2 style="margin: 10px 0 0; font-size: 24px; color: white">
+          Welcome back, <?php echo htmlspecialchars($user['username']); ?>
+        </h2>
+      </div>
+      <div class="hud-stats">
+        <div class="badge streak">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            style="margin-right: 5px">
+            <path
+              d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+          </svg>
+          <!-- FIXED: Removed the hardcoded '12' -->
+          <?php echo $user['streak']; ?> DAYS
+        </div>
+        <div class="badge xp">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            style="margin-right: 5px">
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+            <path d="M4 22h16" />
+            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+          </svg>
+          <!-- FIXED: Removed the hardcoded '2,450' -->
+          <?php echo number_format($user['xp']); ?> XP
+        </div>
+      </div>
+    </header>
+
+    <!-- Stats Row -->
+    <div class="stats-row">
+      <div class="glass-panel stat-card">
+        <div class="stat-icon" style="color: var(--violet); background: rgba(139, 92, 246, 0.2)">
+          ⚡
+        </div>
+        <div>
+          <!-- FIXED: Made this dynamic too -->
+          <div style="font-size: 20px; font-weight: bold"><?php echo number_format($user['xp']); ?></div>
+          <div style="font-size: 12px; color: var(--text-muted)">
+            Total XP
+          </div>
+        </div>
+      </div>
+      <div class="glass-panel stat-card">
+        <div class="stat-icon" style="color: var(--cyan); background: rgba(6, 182, 212, 0.2)">
+          🏆
+        </div>
+        <div>
+           <!-- FIXED: Made this dynamic too -->
+          <div style="font-size: 20px; font-weight: bold"><?php echo htmlspecialchars($user['rank_name']); ?></div>
+          <div style="font-size: 12px; color: var(--text-muted)">Rank</div>
+        </div>
+      </div>
+      <div class="glass-panel stat-card">
+        <div class="stat-icon" style="color: var(--green); background: rgba(34, 197, 94, 0.2)">
+          🎯
+        </div>
+        <div>
+          <div style="font-size: 20px; font-weight: bold">87%</div>
+          <div style="font-size: 12px; color: var(--text-muted)">
+            Accuracy
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+        ">
+      <h2 style="margin: 0">Levels</h2>
+      <span style="color: var(--text-muted); font-size: 14px">2 / 6 Completed</span>
+    </div>
+
+    <div class="grid">
+      <!-- Level 1 (Completed) -->
+      <div class="glass-panel level-card completed">
+        <div class="level-header">
+          <div class="level-icon">✓</div>
+          <div class="level-info">
+            <h3>Basics</h3>
+            <p>Letters & Sounds</p>
+          </div>
+          <div class="xp-badge">+50 XP</div>
+        </div>
+        <div class="status-done">✓ Completed</div>
+      </div>
+
+      <!-- Level 2 (Completed) -->
+      <div class="glass-panel level-card completed">
+        <div class="level-header">
+          <div class="level-icon">✓</div>
+          <div class="level-info">
+            <h3>Greetings</h3>
+            <p>Hello & Goodbye</p>
+          </div>
+          <div class="xp-badge">+75 XP</div>
+        </div>
+        <div class="status-done">✓ Completed</div>
+      </div>
+
+      <!-- Level 3 (ACTIVE) -->
+      <div class="glass-panel level-card active">
+        <div class="level-header">
+          <div class="level-icon">3</div>
+          <div class="level-info">
+            <h3>Common Phrases</h3>
+            <p>Everyday expressions</p>
+          </div>
+          <div class="xp-badge">+100 XP</div>
+        </div>
+        <div class="progress-container">
+          <div class="progress-label">
+            <span style="color: var(--text-muted)">Progress</span><span style="color: var(--violet)">45%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 45%"></div>
+          </div>
+        </div>
+        <!-- Fixed Link -->
+        <button class="btn-start" onclick="event.stopPropagation(); window.location.href='lesson.html?type=happy'">
+          CONTINUE
+        </button>
+      </div>
+
+      <!-- Level 4 -->
+      <div class="glass-panel level-card active" style="border-color: var(--violet); box-shadow: none">
+        <div class="level-header">
+          <div class="level-icon">4</div>
+          <div class="level-info">
+            <h3>Numbers</h3>
+            <p>Counting 1-100</p>
+          </div>
+          <div class="xp-badge">+80 XP</div>
+        </div>
+        <!-- Fixed Link -->
+        <button class="btn-start" onclick="window.location.href='lesson.html?type=numbers1'">
+          START LEVEL
+        </button>
+      </div>
+
+      <!-- Locked Levels -->
+      <div class="glass-panel level-card locked">
+        <div class="level-header">
+          <div class="level-icon">🔒</div>
+          <div class="level-info">
+            <h3 style="color: #64748b">Food</h3>
+            <p style="color: #475569">Ordering & Dining</p>
+          </div>
+          <div class="xp-badge">+120 XP</div>
+        </div>
+      </div>
+      <div class="glass-panel level-card locked">
+        <div class="level-header">
+          <div class="level-icon">🔒</div>
+          <div class="level-info">
+            <h3 style="color: #64748b">Travel</h3>
+            <p style="color: #475569">Getting Around</p>
+          </div>
+          <div class="xp-badge">+150 XP</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- LINK TO SHARED JS -->
+  <script src="script.js"></script>
+</body>
+
+</html>
